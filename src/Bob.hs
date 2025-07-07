@@ -1,16 +1,18 @@
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE ViewPatterns #-}
+
 module Bob (responseFor) where
 
-import Data.Char (isLetter, isSpace, isUpper)
+import Data.Char
+import Data.Text (Text, strip, unsnoc)
+import qualified Data.Text as Text
 
-responseFor :: String -> String
-responseFor xs = case () of
-  _
-    | null trimmed -> "Fine. Be that way!"
-    | isShouting && isQuestion -> "Calm down, I know what I'm doing!"
-    | isShouting -> "Whoa, chill out!"
-    | isQuestion -> "Sure."
-    | otherwise -> "Whatever."
+responseFor :: Text -> Text
+responseFor (strip -> query)
+  | Text.null query = "Fine. Be that way!"
+  | (snd <$> unsnoc query) == Just '?' && isYelled = "Calm down, I know what I'm doing!"
+  | (snd <$> unsnoc query) == Just '?' = "Sure."
+  | isYelled = "Whoa, chill out!"
+  | otherwise = "Whatever."
   where
-    trimmed = filter (not . isSpace) xs
-    isShouting = all isUpper (filter isLetter trimmed) && any isUpper (filter isLetter trimmed)
-    isQuestion = last trimmed == '?'
+    isYelled = Text.any isLetter query && not (Text.any isLower query)
