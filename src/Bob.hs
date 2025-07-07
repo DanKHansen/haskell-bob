@@ -3,7 +3,7 @@
 
 module Bob (responseFor) where
 
-import Data.Char
+import Data.Char (isLetter, isLower)
 import Data.Text (Text, strip, unsnoc)
 import qualified Data.Text as Text
 
